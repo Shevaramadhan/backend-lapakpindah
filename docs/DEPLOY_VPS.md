@@ -135,7 +135,7 @@ curl -X POST https://<DOMAIN-ANDA>/api/v1/auth/login \
 Server VPS Kelompok 8 sudah aktif di:
 - Health check: `https://lapakpindah.43-157-229-215.sslip.io/api/health`
 - API Base URL: `https://lapakpindah.43-157-229-215.sslip.io/api/v1`
-- Lokasi di VPS: `/opt/lapakpindah-backend` (Nginx reverse proxy → `127.0.0.1:3000`, MySQL container di host `127.0.0.1:3307`, update dengan `./deploy.sh --no-caddy`)
+- Lokasi di VPS: `/opt/lapakpindah-backend` (Nginx reverse proxy → `127.0.0.1:3000`, memakai MySQL aaPanel di host port `3306`, update dengan `./deploy.sh --host-db`)
 
 Semua anggota bisa menjalankan Flutter langsung ke server VPS:
 

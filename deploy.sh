@@ -3,12 +3,15 @@ set -euo pipefail
 
 # Script update backend LapakPindah di VPS (aman: tidak menghapus data database).
 # Pemakaian:
-#   ./deploy.sh              # mode standar VPS (API + MySQL + Caddy HTTPS)
-#   ./deploy.sh --no-caddy   # jika VPS sudah memakai Nginx/Caddy sendiri di port 80/443
+#   ./deploy.sh              # mode standar VPS (API + MySQL Docker + Caddy HTTPS)
+#   ./deploy.sh --no-caddy   # tanpa Caddy (VPS sudah punya Nginx/Caddy sendiri)
+#   ./deploy.sh --host-db    # tanpa Caddy & memakai MySQL/MariaDB host VPS (mis. aaPanel)
 
-USE_CADDY=true
+MODE="full"
 if [[ "${1:-}" == "--no-caddy" ]]; then
-  USE_CADDY=false
+  MODE="no-caddy"
+elif [[ "${1:-}" == "--host-db" ]]; then
+  MODE="host-db"
 fi
 
 if [[ ! -f .env ]]; then
@@ -22,14 +25,19 @@ git checkout main
 git pull --ff-only origin main
 
 echo "==> 2. Membangun ulang dan menyalakan container..."
-if [[ "$USE_CADDY" == true ]]; then
+if [[ "$MODE" == "full" ]]; then
   docker compose --profile prod up -d --build
-else
+  echo "==> 3. Menjalankan migrasi tabel (data lama aman)..."
+  docker compose exec -T api npm run db:migrate
+elif [[ "$MODE" == "no-caddy" ]]; then
   docker compose up -d --build
+  echo "==> 3. Menjalankan migrasi tabel (data lama aman)..."
+  docker compose exec -T api npm run db:migrate
+else
+  docker compose -f docker-compose.yml -f docker-compose.host-db.yml up -d --build --no-deps api
+  echo "==> 3. Menjalankan migrasi tabel (data lama aman)..."
+  docker compose -f docker-compose.yml -f docker-compose.host-db.yml exec -T api npm run db:migrate
 fi
-
-echo "==> 3. Menjalankan migrasi tabel (data lama aman)..."
-docker compose exec -T api npm run db:migrate
 
 PORT_VALUE=$(grep -E '^PORT=' .env | tail -n1 | cut -d '=' -f2- || true)
 PORT_VALUE=${PORT_VALUE:-3000}
