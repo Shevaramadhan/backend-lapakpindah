@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS sales_sessions (
   break_even_notified TINYINT(1) NOT NULL DEFAULT 0,
   -- Bernilai user_id hanya saat sesi aktif, NULL saat selesai. UNIQUE di kolom
   -- ini membuat satu pengguna hanya bisa punya satu sesi aktif (NFR-05).
-  active_user_id      INT AS (IF(status = 'aktif', user_id, NULL)) STORED,
+  -- Memakai VIRTUAL agar kompatibel dengan ON DELETE CASCADE di MySQL 8.4 maupun MariaDB.
+  active_user_id      INT AS (IF(status = 'aktif', user_id, NULL)) VIRTUAL,
   CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   -- RESTRICT: lokasi yang sudah punya sesi tidak boleh dihapus (FR-01).
   CONSTRAINT fk_sessions_location FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE RESTRICT,
