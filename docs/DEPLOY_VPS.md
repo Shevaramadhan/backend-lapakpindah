@@ -132,10 +132,15 @@ curl -X POST https://<DOMAIN-ANDA>/api/v1/auth/login \
 
 ## 5. Menghubungkan aplikasi Flutter ke VPS
 
-Setelah `/api/health` sukses, semua anggota bisa menjalankan Flutter langsung ke server VPS:
+Server VPS Kelompok 8 sudah aktif di:
+- Health check: `https://lapakpindah.43-157-229-215.sslip.io/api/health`
+- API Base URL: `https://lapakpindah.43-157-229-215.sslip.io/api/v1`
+- Lokasi di VPS: `/opt/lapakpindah-backend` (Nginx reverse proxy → `127.0.0.1:3000`, MySQL container di host `127.0.0.1:3307`, update dengan `./deploy.sh --no-caddy`)
+
+Semua anggota bisa menjalankan Flutter langsung ke server VPS:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://<DOMAIN-ANDA>/api/v1
+flutter run --dart-define=API_BASE_URL=https://lapakpindah.43-157-229-215.sslip.io/api/v1
 ```
 
 Login demo: `081234567890` / PIN `123456`.

@@ -2,8 +2,9 @@
 
 REST API LapakPindah dengan **Express 5** dan **MySQL** (repository terpisah dari aplikasi mobile Flutter `mobile-lapakpindah`).
 
+- **Server VPS aktif (branch `main`):** `https://lapakpindah.43-157-229-215.sslip.io/api/v1` (cek kesehatan: `https://lapakpindah.43-157-229-215.sslip.io/api/health`)
 - Daftar endpoint dan bentuk JSON (Kontrak API): [docs/api/kontrak-api.md](docs/api/kontrak-api.md)
-- Panduan deploy ke VPS (Docker Compose + HTTPS Caddy): [docs/DEPLOY_VPS.md](docs/DEPLOY_VPS.md)
+- Panduan deploy ke VPS (Docker Compose + HTTPS): [docs/DEPLOY_VPS.md](docs/DEPLOY_VPS.md)
 - Panduan kerja kelompok & integrasi Flutter: tersedia di repo mobile (`lapakpindah/docs/PANDUAN_BACKEND_KELOMPOK.md`)
 
 ## Menjalankan di laptop
@@ -129,4 +130,3 @@ Build debug Android sudah diizinkan memakai `http://`. Build rilis wajib `https:
 ## Belum dikerjakan
 
 - Endpoint modul yang bertanda ⏳ di kontrak API.
-- Menjalankan deploy Docker Compose di VPS (lihat [docs/DEPLOY_VPS.md](docs/DEPLOY_VPS.md)).

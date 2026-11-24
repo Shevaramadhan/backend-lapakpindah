@@ -18,7 +18,7 @@ Status: ✅ sudah jadi di `main` · ⏳ belum dikerjakan
 
 | Hal | Aturan |
 |---|---|
-| Alamat dasar | `http://localhost:3000/api/v1` (laptop) atau `https://<server>/api/v1` (online) |
+| Alamat dasar | `http://localhost:3000/api/v1` (laptop) atau `https://lapakpindah.43-157-229-215.sslip.io/api/v1` (VPS) |
 | Login | Header `Authorization: Bearer <token>` di semua endpoint kecuali `/auth/login` |
 | Nama kolom JSON | camelCase, contoh `locationId`, `plannedCloseAt` (kolom MySQL tetap snake_case) |
 | ID | Bilangan bulat |
