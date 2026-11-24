@@ -1,0 +1,65 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-lapakpindah}
+      MYSQL_USER: ${DB_USER:-lapakpindah}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-lapakpindah_dev}
+    ports:
+      - "127.0.0.1:${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-lapakpindah}
+      DB_PASSWORD: ${DB_PASSWORD:-lapakpindah_dev}
+      DB_NAME: ${DB_NAME:-lapakpindah}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-jangan-dipakai-di-server}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-30d}
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "${API_BIND_HOST:-127.0.0.1}:${PORT:-3000}:3000"
+    volumes:
+      - uploads_data:/app/uploads
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["prod"]
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:-:80}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  mysql_data:
+  uploads_data:
+  caddy_data:
+  caddy_config:

@@ -21,13 +21,34 @@ const connection = await mysql.createConnection({
 
 try {
   if (fresh) {
-    await connection.query(`DROP DATABASE IF EXISTS \`${config.db.name}\``);
-    console.log(`Database "${config.db.name}" dihapus.`);
+    try {
+      await connection.query(`DROP DATABASE IF EXISTS \`${config.db.name}\``);
+      console.log(`Database "${config.db.name}" dihapus.`);
+    } catch (err) {
+      if (err.code !== 'ER_DBACCESS_DENIED_ERROR') throw err;
+      // User non-root (misalnya di Docker/VPS): kosongkan semua tabel di dalam database.
+      await connection.query(`USE \`${config.db.name}\``);
+      const [tables] = await connection.query('SHOW TABLES');
+      await connection.query('SET FOREIGN_KEY_CHECKS = 0');
+      for (const row of tables) {
+        const tableName = Object.values(row)[0];
+        await connection.query(`DROP TABLE IF EXISTS \`${tableName}\``);
+      }
+      await connection.query('SET FOREIGN_KEY_CHECKS = 1');
+      console.log(`Semua tabel di "${config.db.name}" dihapus.`);
+    }
   }
-  await connection.query(
-    `CREATE DATABASE IF NOT EXISTS \`${config.db.name}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
-  );
-  await connection.query(`USE \`${config.db.name}\``);
+
+  try {
+    await connection.query(`USE \`${config.db.name}\``);
+  } catch (err) {
+    if (err.code !== 'ER_BAD_DB_ERROR') throw err;
+    await connection.query(
+      `CREATE DATABASE IF NOT EXISTS \`${config.db.name}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
+    );
+    await connection.query(`USE \`${config.db.name}\``);
+  }
+
   await connection.query("SET time_zone = '+00:00'");
 
   for (const file of files) {

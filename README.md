@@ -3,9 +3,32 @@
 REST API LapakPindah dengan **Express 5** dan **MySQL** (repository terpisah dari aplikasi mobile Flutter `mobile-lapakpindah`).
 
 - Daftar endpoint dan bentuk JSON (Kontrak API): [docs/api/kontrak-api.md](docs/api/kontrak-api.md)
+- Panduan deploy ke VPS (Docker Compose + HTTPS Caddy): [docs/DEPLOY_VPS.md](docs/DEPLOY_VPS.md)
 - Panduan kerja kelompok & integrasi Flutter: tersedia di repo mobile (`lapakpindah/docs/PANDUAN_BACKEND_KELOMPOK.md`)
 
 ## Menjalankan di laptop
+
+### Cara 1 — Pakai Docker Compose (paling cepat, tidak perlu install MySQL)
+
+Yang dibutuhkan: Docker Desktop (atau Docker Engine + Compose) dan Node.js 20+ (opsional jika hanya menjalankan container).
+
+```bash
+git clone https://github.com/Shevaramadhan/backend-lapakpindah.git lapakpindah-backend
+cd lapakpindah-backend
+copy .env.example .env         # Mac/Linux: cp .env.example .env
+
+# Opsi A: Jalankan MySQL + API sekaligus di Docker
+docker compose up -d --build
+docker compose exec api npm run db:fresh
+
+# Opsi B: Jalankan MySQL saja di Docker, API pakai npm run dev (auto-reload saat ngoding)
+docker compose up -d db
+npm install
+npm run db:fresh
+npm run dev
+```
+
+### Cara 2 — Pakai XAMPP / Laragon (tanpa Docker)
 
 Yang dibutuhkan: Node.js 20+ dan MySQL/MariaDB yang menyala (XAMPP atau Laragon).
 
@@ -14,7 +37,7 @@ git clone https://github.com/Shevaramadhan/backend-lapakpindah.git lapakpindah-b
 cd lapakpindah-backend
 npm install
 copy .env.example .env    # Mac/Linux: cp .env.example .env
-# isi DB_USER, DB_PASSWORD, DB_PORT di .env
+# isi DB_USER=root dan DB_PASSWORD sesuai MySQL lokal di .env
 npm run db:fresh          # buat database + semua tabel + data demo
 npm run dev               # http://localhost:3000, restart otomatis saat file berubah
 ```
@@ -106,4 +129,4 @@ Build debug Android sudah diizinkan memakai `http://`. Build rilis wajib `https:
 ## Belum dikerjakan
 
 - Endpoint modul yang bertanda ⏳ di kontrak API.
-- Deploy ke server online (VPS + HTTPS).
+- Menjalankan deploy Docker Compose di VPS (lihat [docs/DEPLOY_VPS.md](docs/DEPLOY_VPS.md)).

@@ -16,6 +16,7 @@ import { sesiLokasiRoutes } from './modules/sesi_lokasi/index.js';
 
 export const app = express();
 
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 // Foto nota (Modul 2) bisa dibuka di /uploads/<nama-file>.
